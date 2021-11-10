@@ -38,6 +38,11 @@ style_duo_accent(
 #)
 ```
 
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+
 <style>
 
 .center2 {
@@ -56,9 +61,27 @@ style_duo_accent(
     font-size: 30px;
 }
 </style>
-```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
-```
+
+
+### Content
+
+
+- Time series features
+
+- feasts: *F*eature *E*xtraction *A*nd *S*tatistics for *T*ime *S*eries
+
+- Feature-based time series forecasting
+
+- Other applications
+
+    - Data visualization
+
+    - Anomaly detection
+    
+- What did we learn?
+
+- Where to go from here?
+
 
 ---
 
@@ -373,12 +396,12 @@ features.all
 ```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
 df2 <- confirmed %>% filter(country=="US")
 p1 <- autoplot(as.ts(df2$cases, frequency=c(7)), col="#1b9e77") + ggtitle("US") + ylab("")
-df3 <- confirmed %>% filter(country=="Norway")
-p2 <- autoplot(as.ts(df3$cases, frequency=c(7)), col="#d95f02") + ggtitle("Norway") + ylab("")
+df3 <- confirmed %>% filter(country=="Cameroon")
+p2 <- autoplot(as.ts(df3$cases, frequency=c(7)), col="#d95f02") + ggtitle("Cameroon") + ylab("")
 df4 <- confirmed %>% filter(country=="India")
 p3 <- autoplot(as.ts(df4$cases, frequency=c(7)), col="#7570b3") + ggtitle("India") + ylab("")
-df5 <- confirmed %>% filter(country=="China")
-p4 <- autoplot(as.ts(df5$cases, frequency=c(7)), col="#e7298a") + ggtitle("China") + ylab("")
+df5 <- confirmed %>% filter(country=="Nicaragua")
+p4 <- autoplot(as.ts(df5$cases, frequency=c(7)), col="#e7298a") + ggtitle("Nicaragua") + ylab("")
 library(patchwork)
 p1/p2/p3/p4
 ```
@@ -393,9 +416,9 @@ p1/p2/p3/p4
 
 ```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
 df2 <- features.all %>% filter(country=="US")
-df3 <- features.all %>% filter(country=="Norway")
+df3 <- features.all %>% filter(country=="Cameroon")
 df4 <- features.all %>% filter(country=="India")
-df5 <- features.all %>% filter(country=="Australia")
+df5 <- features.all %>% filter(country=="Nicaragua")
 
 p <- features.all %>%
   ggplot(aes(y = trend_strength, x = seasonal_strength_week, label=country)) + 
@@ -422,7 +445,104 @@ ggplotly(p)
 
 ]
 
+
 ---
+
+## Strength of trend
+
+.pull-left[
+
+```{r, comment=NA, message=FALSE, echo=FALSE, warning=FALSE}
+library(fable)
+as_tsibble(M3[["N1912"]]$x) %>%
+  model(
+    STL(value ~ trend(window = 7) +
+                   season(window = "periodic"),
+    robust = TRUE)) %>%
+  components() %>%
+  autoplot()
+
+```
+
+
+
+]
+
+.pull-right[
+
+$$y_t = T_t + S_t + R_t$$
+
+$$F_T = max \left(0, 1 - \frac{Var(R_t)}{Var(T_t + R_t)} \right)$$
+
+
+]
+
+
+---
+
+## Strength of seasonality
+
+.pull-left[
+
+```{r, comment=NA, message=FALSE, echo=FALSE, warning=FALSE}
+library(fable)
+as_tsibble(M3[["N1912"]]$x) %>%
+  model(
+    STL(value ~ trend(window = 7) +
+                   season(window = "periodic"),
+    robust = TRUE)) %>%
+  components() %>%
+  autoplot()
+
+```
+
+
+]
+
+
+.pull-right[
+
+$$y_t = T_t + S_t + R_t$$
+
+$$F_S = max \left(0, 1 - \frac{Var(R_t)}{Var(S_t + R_t)} \right)$$
+
+
+
+]
+
+
+---
+
+
+## *F*eature *E*xtraction *A*nd *S*tatistics for *T*ime *S*eries: *feasts*
+
+.pull-left[
+
+You could install the stable version from CRAN:
+
+```r
+install.packages("feasts")
+```
+
+You can install the development version from GitHub with:
+
+```r
+# install.packages("remotes")
+remotes::install_github("tidyverts/feasts")
+```
+]
+
+.pull-right[
+
+![](img/feastlogo.png)
+]
+
+
+
+
+---
+
+
 class: center, middle
 
 
@@ -446,65 +566,6 @@ background-size: contain
 
 ---
 
-
-## *F*eature *E*xtraction *A*nd *S*tatistics for *T*ime Series: *feast*
-
-.pull-left[
-
-You could install the stable version from CRAN:
-
-```r
-install.packages("feasts")
-```
-
-You can install the development version from GitHub with:
-
-```r
-# install.packages("remotes")
-remotes::install_github("tidyverts/feasts")
-```
-]
-
-.pull-right[
-
-![](img/feastlogo.png)
-]
-
----
-
-# Strength of trend
-
-.pull-left[
-
-
-
-
-]
-
-.pull-right[
-
-
-]
-
-
----
-
-# Strength of seasonality
-
-.pull-left[
-
-
-]
-
-
-.pull-right[
-
-
-
-]
-
-
----
 class: center, middle
 
 # Feature-based time series forecasting
