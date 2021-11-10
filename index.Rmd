@@ -157,6 +157,8 @@ background-position: 100% 6%
 
 .pull-left[
 
+- length
+
 - strength of trend
 
 - strength of seasonality
@@ -167,10 +169,483 @@ background-position: 100% 6%
 
 - proportion of zeros
 
+
+- spikiness
+
+]
+
+.pull-right[
+
+- curvature
+
+- linearity
+
+- number of peaks
+
+- parameter estimates of Holt-Winters' additive method
+
+- unit root test statistics
+
+- unit root test statistics
+
+
+
+
+
+
+]
+
+---
+.pull-left[
+#### Time-domain representation
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+library(Mcomp)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+library(png)
+library(tsfeatures)
+library(tidyverse)
+library(ggpubr)
+# Extract required series
+series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
+color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
+six_series <- lapply(M3[series_id], function(u){u$x})
+p <- lapply(six_series,
+function(u) {autoplot(u) + xlab("") + ylab("")}
+)
+for (i in seq_along(six_series))
+p[[i]] <- p[[i]] +geom_line(color=color[i]) +ggtitle(series_id[i])+theme(title =element_text(size=10, face='bold'))
+grid.arrange(grobs = p, ncol = 2)
+```
+
+]
+
+--
+
+.pull-right[
+
+#### Feature-domain representation
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+df <- tsfeatures(six_series, c("stl_features")) %>%
+  select(trend, seasonal_strength) %>%
+  rename(seasonality = seasonal_strength) %>%
+  replace_na(list(seasonality = 0))
+df$id <- names(six_series)
+ggplot(df, aes(x = trend, y = seasonality)) +
+  geom_point(size = 5, color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")) +
+  xlim(0, 1) + ylim(0, 1) +
+  xlab("Strength of trend") + 
+  ylab("Strength of seasonality") + 
+  coord_fixed() +
+  geom_text_repel(
+    aes(label = id),
+    colour = "black",
+    size = 5,
+    box.padding = unit(0.5, "lines")
+  ) +
+  theme(legend.position = "none")
+```
+
+]
+
+---
+
+### Time-domain representation
+
+.pull-left[
+
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+library(Mcomp)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+library(png)
+library(tsfeatures)
+library(tidyverse)
+library(ggpubr)
+# Extract required series
+series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
+color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
+six_series <- lapply(M3[series_id], function(u){u$x})
+six_series
+```
+
+]
+
+.pull-right[
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+library(Mcomp)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+library(png)
+library(tsfeatures)
+library(tidyverse)
+library(ggpubr)
+# Extract required series
+series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
+color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
+six_series <- lapply(M3[series_id], function(u){u$x})
+p <- lapply(six_series,
+function(u) {autoplot(u) + xlab("") + ylab("")}
+)
+for (i in seq_along(six_series))
+p[[i]] <- p[[i]] +geom_line(color=color[i]) +ggtitle(series_id[i])+theme(title =element_text(size=10, face='bold'))
+grid.arrange(grobs = p, ncol = 2)
+```
+
+]
+
+---
+### Feature-domain representation
+
+.pull-left[
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+df 
+```
 ]
 
 .pull-right[
 
 
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+df <- tsfeatures(six_series, c("stl_features")) %>%
+  select(trend, seasonal_strength) %>%
+  rename(seasonality = seasonal_strength) %>%
+  replace_na(list(seasonality = 0))
+df$id <- names(six_series)
+ggplot(df, aes(x = trend, y = seasonality)) +
+  geom_point(size = 5, color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")) +
+  xlim(0, 1) + ylim(0, 1) +
+  xlab("Strength of trend") + 
+  ylab("Strength of seasonality") + 
+  coord_fixed() +
+  geom_text_repel(
+    aes(label = id),
+    colour = "black",
+    size = 5,
+    box.padding = unit(0.5, "lines")
+  ) +
+  theme(legend.position = "none")
+```
+
+
 ]
+
+
+---
+background-image: url(img/feastlogo.png)
+background-size: 90px
+background-position: 100% 6%
+
+## Feature Extraction And Statistics for Time Series: feast
+
+**Installation**
+
+You could install the stable version from CRAN:
+
+```r
+install.packages("feasts")
+```
+
+You can install the development version from GitHub with:
+
+```r
+# install.packages("remotes")
+remotes::install_github("tidyverts/feasts")
+```
+
+
+---
+
+
+
+
+class: split-two white
+
+
+.column.bg-white[.content[
+
+```{r, comment=NA, message=FALSE, eval=FALSE}
+library(tsibble)
+norway <- confirmed %>% 
+  filter(country == "Norway")
+
+
+
+```
+
+]]
+
+.column.bg-white[.content[
+]]
+
+---
+
+class: split-two white
+
+
+.column.bg-white[.content[
+
+```{r, comment=NA, message=FALSE, eval=FALSE}
+library(tsibble)
+norway <- confirmed %>% 
+  filter(country == "Norway")
+norway.tsibble <- tsibble( ##<<
+  date = as.Date("2020-01-22") + 0:491, ##<<
+  Observation = norway$cases, ##<<
+  index = date) ##<<
+
+
+
+```
+
+]]
+
+.column.bg-white[.content[
+]]
+
+
+
+---
+
+
+class: split-two white
+
+
+.column.bg-white[.content[
+
+```{r, comment=NA, message=FALSE, eval=FALSE}
+library(tsibble)
+norway <- confirmed %>% 
+  filter(country == "Norway")
+norway.tsibble <- tsibble( 
+  date = as.Date("2020-01-22") + 0:491, 
+  Observation = norway$cases, 
+  index = date) 
+norway.tsibble ##<<
+
+
+```
+
+```{r, comment=NA, message=FALSE, echo=FALSE}
+library(tsibble)
+norway <- confirmed %>% 
+  filter(country == "Norway")
+norway.tsibble <- tsibble( 
+  date = as.Date("2020-01-22") + 0:491, 
+  Observation = norway$cases, 
+  index = date) 
+norway.tsibble 
+
+
+```
+
+]]
+
+.column.bg-white[.content[
+]]
+
+
+---
+
+
+class: split-two white
+
+
+.column.bg-white[.content[
+
+```{r, comment=NA, message=FALSE}
+library(tsibble)
+norway <- confirmed %>% 
+  filter(country == "Norway")
+norway.tsibble <- tsibble( 
+  date = as.Date("2020-01-22") + 0:491, 
+  Observation = norway$cases, 
+  index = date) 
+norway.tsibble 
+
+
+```
+
+]]
+
+.column.bg-white[.content[
+
+```{r, comment=NA, message=FALSE}
+library(fable) ##<<
+autoplot(norway.tsibble) ##<<
+```
+
+]]
+
+
+---
+
+## Compute features
+
+```{r, comment=NA, message=FALSE}
+library(feasts) ##<<
+norway.tsibble %>% ##<<
+  features(Observation, feature_set(tags = ##<<
+  c("decomposition", "intermittent", "autocorrelation"))) %>% as.data.frame()##<<
+```
+
+
+---
+
+
+.pull-left[
+
+## tibble
+
+```{r, comment=NA}
+confirmed 
+
+```
+
+]
+
+.pull-right[
+
+## tsibble
+
+```{r, comment=NA}
+confirmed.tsibble <- confirmed %>%
+  as_tsibble(index = date, key = country)
+confirmed.tsibble
+```
+
+]
+
+---
+
+## Features for all countries
+
+```{r, comment=NA, message=FALSE, warning=FALSE}
+features.all <- confirmed.tsibble %>% features(cases, feature_set(tags = c("decomposition", "intermittent", "autocorrelation")))
+features.all
+```
+
+---
+class: split-two white
+
+
+.column.bg-white[.content[
+
+# Feature-based visualization
+
+```{r, comment=NA, message=FALSE, warning=FALSE, eval=FALSE}
+features.all %>%
+  ggplot(aes(x = trend_strength, y =  seasonal_strength_week)) + 
+  geom_point() + 
+  coord_equal() + 
+  xlim(c(0,1)) + ylim(c(0,1)) + 
+  labs(x = "Trend strength",
+       y = "Seasonal strength") + 
+  theme(legend.position = "bottom")
+```
+
+]]
+
+.column.bg-white[.content[
+
+#
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+p <- features.all %>%
+  ggplot(aes(y = trend_strength, x = seasonal_strength_week)) + 
+  geom_point() + 
+  coord_equal() + 
+  xlim(c(0,1)) + ylim(c(0,1)) + 
+  labs(y = "Trend strength", x = "Seasonal strength") + 
+  theme(legend.position = "none") 
+ggplotly(p)
+```
+
+]]
+
+
+---
+.pull-left[
+
+# Time-domain 
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+df2 <- confirmed %>% filter(country=="US")
+p1 <- autoplot(as.ts(df2$cases, frequency=c(7)), col="#1b9e77") + ggtitle("US") + ylab("")
+df3 <- confirmed %>% filter(country=="Norway")
+p2 <- autoplot(as.ts(df3$cases, frequency=c(7)), col="#d95f02") + ggtitle("Norway") + ylab("")
+df4 <- confirmed %>% filter(country=="India")
+p3 <- autoplot(as.ts(df4$cases, frequency=c(7)), col="#7570b3") + ggtitle("India") + ylab("")
+df5 <- confirmed %>% filter(country=="China")
+p4 <- autoplot(as.ts(df5$cases, frequency=c(7)), col="#e7298a") + ggtitle("China") + ylab("")
+library(patchwork)
+p1/p2/p3/p4
+```
+
+
+]
+
+
+.pull-right[
+
+# Feature-space
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+df2 <- features.all %>% filter(country=="US")
+df3 <- features.all %>% filter(country=="Norway")
+df4 <- features.all %>% filter(country=="India")
+df5 <- features.all %>% filter(country=="China")
+
+p <- features.all %>%
+  ggplot(aes(y = trend_strength, x = seasonal_strength_week, label=country)) + 
+  geom_point() + 
+  coord_equal() + 
+  xlim(c(0,1)) + ylim(c(0,1)) + 
+  labs(y = "Trend strength", y = "Seasonal strength") + 
+  theme(legend.position = "none") + 
+    geom_point(data=df2, aes(y = trend_strength, x = seasonal_strength_week), 
+             colour="#1b9e77", 
+             size=5) +
+  geom_point(data=df3, aes(y = trend_strength, x = seasonal_strength_week), 
+             colour="#d95f02", 
+             size=5) +
+  geom_point(data=df4, aes(y = trend_strength, x = seasonal_strength_week), 
+             colour="#7570b3", 
+             size=5) +
+  geom_point(data=df5, aes(y = trend_strength, x = seasonal_strength_week), 
+             colour="#e7298a", 
+             size=5) 
+ggplotly(p)
+
+```
+
+]
+
+
+
+
+---
+
+class: split-70 hide-slide-number
+background-image: url("img/ts.jpeg")
+background-size: cover
+
+.column.slide-in-left[
+.sliderbox.vmiddle.shade_main.center[
+.font5[Large-scale Forecasting]]]
+.column[
+]
+
+
 
