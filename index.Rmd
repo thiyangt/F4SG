@@ -1,0 +1,170 @@
+---
+title: "Feature-based Time Series Forecasting"
+subtitle: ""
+author: "Thiyanga S. Talagala"
+date: "Forecasting for Social Good (F4SG): Democratising Forecasting"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: 
+      - default
+      - default-fonts
+      - duke-blue
+      - hygge-duke
+      - libs/cc-fonts.css
+      - libs/figure-captions.css
+      - xaringan-themer.css
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_duo_accent(
+  primary_color = "#081d58",
+  secondary_color = "#FF961C",
+ inverse_header_color = "#FFFFFF",
+ title_slide_text_color = "#edf8b1",
+ link_color =  "#41b6c4"
+)
+#style_solarized_light(text_font_google   = google_font("Josefin Sans", "400", "400i", "800i", "800"))
+#style_mono_light(
+#  base_color = "#1c5253",
+#  header_font_google = google_font("Josefin Sans"),
+#  text_font_google   = google_font("Josefin Sans", "400", "400i", "800i", "800"),
+#  code_font_google   = google_font("Fira Mono")
+#)
+```
+
+<style>
+
+.center2 {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+</style>
+
+<style type="text/css">
+.remark-slide-content {
+    font-size: 30px;
+}
+</style>
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+
+## Road map
+
+---
+
+background-image: url(img/jhu.png)
+background-size: contain
+
+---
+
+class: inverse, center, middle
+background-image: url(img/jhu.png)
+background-position: 50% 60%1
+
+background-size: contain
+
+
+`r anicon::nia("Let's visualize the coronavirus pandemic!",  size=3, colour="yellow", animate="pulse")`
+
+---
+
+background-image: url(img/coronavirus.png)
+background-size: 90px
+background-position: 100% 6%
+
+# Data: coronavirus package
+
+
+```r
+install.packages("coronavirus")
+# devtools::install_github("RamiKrispin/coronavirus")
+```
+
+```{r, comment=NA}
+library(coronavirus)
+head(coronavirus, 8)
+```
+
+
+---
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+library(tidyverse)
+
+
+coronavirus <- coronavirus %>% mutate(cases = replace(cases, which(cases<0), NA))
+coronavirus <- coronavirus %>% mutate(cases = replace(cases, which(cases>800000), 800))
+#confirmed <- coronavirus %>% filter(type == "confirmed")
+confirmed <- coronavirus %>% 
+  filter(type == "confirmed") %>%
+  group_by(country, date) %>%
+  summarise(cases = sum(cases)) 
+```
+
+```{r, echo=FALSE, fig.width=15, fig.height=8, warning=FALSE, message=FALSE}
+library(plotly)
+p <- ggplot(confirmed, aes(x=date, y=cases, col=country)) + geom_line() + ggtitle("Confirmed Cases") + theme(legend.position = "none") 
+
+
+ggplotly(p)
+```
+
+---
+class: center, middle
+
+# What problems do you see in the plot?
+
+---
+
+
+background-image: url(img/tukey.jpeg)
+background-size: 200px
+background-position: 100% 6%
+
+# Time series features
+
+- **Cognostics**: **Co**mputer-aided dia**gnostics** (John W. Tukey, 1985)
+
+- Characteristics of time series
+
+- Summary measures of time series
+
+
+**Basic Principle**
+
+- Transform a given time series $y=\{y_1, y_2, \cdots, y_n\}$ into a feature vector $F = (f_1(y), f_2(y), \cdots, f_p(y))'$. 
+
+
+
+
+---
+
+.pull-left[
+## Examples of time series features
+
+- strength of trend
+
+- strength of seasonality
+
+- lag-1 autocorrelation
+
+- spectral entropy
+
+- proportion of zeros
+
+]
+
