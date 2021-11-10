@@ -153,8 +153,9 @@ background-position: 100% 6%
 
 ---
 
-.pull-left[
 ## Examples of time series features
+
+.pull-left[
 
 - strength of trend
 
@@ -165,6 +166,11 @@ background-position: 100% 6%
 - spectral entropy
 
 - proportion of zeros
+
+]
+
+.pull-right[
+
 
 ]
 
