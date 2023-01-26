@@ -366,12 +366,12 @@ ggplot(df, aes(y=v2, x=v3)) +
 ```
 
 ---
-background-image: url(img/supermarket.jpg)
+background-image: url(imgwhyr/supermarket.jpg)
 class: center, top, inverse
 
 
 ---
-background-image: url(img/supermarket.jpg)
+background-image: url(imgwhyr/supermarket.jpg)
 class: center, top, inverse
 
 
@@ -464,6 +464,616 @@ class: center, middle, inverse
 
 #How to forecast large number of univariate time series?
 
+
+
+---
+
+## Aggregate selection rule
+
+```{r, echo=FALSE, fig.width=15, fig.height=8, warning=FALSE, message=FALSE}
+library(plotly)
+p <- ggplot(confirmed, aes(x=date, y=cases)) + geom_line() +  theme(legend.position = "none")
+p + theme(legend.position = "none") + ylim(c(0, 800)) + ylab("Sales")
+```
+
+---
+
+## Individual model building
+
+```{r, echo=FALSE, fig.width=15, fig.height=8, warning=FALSE, message=FALSE}
+library(plotly)
+p <- ggplot(confirmed, aes(x=date, y=cases, colour=country)) + geom_line() +  theme(legend.position = "none")
+p + theme(legend.position = "none") + ylim(c(0, 800)) + ylab("Sales")
+```
+
+---
+
+## Individual model building
+
+.pull-left[
+
+```{r, echo=FALSE, fig.width=15, fig.height=8, warning=FALSE, message=FALSE}
+library(plotly)
+p <- ggplot(confirmed, aes(x=date, y=cases, colour=country)) + geom_line() +  theme(legend.position = "none")
+p + theme(legend.position = "none") + ylim(c(0, 800)) + ylab("Sales")
+```
+
+
+]
+
+
+
+--
+
+.pull-right[
+
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#ffff99", "black","#b2df8a", "red", "#377eb8", "#984ea3")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+
+]
+
+
+--
+.full-width[.content-box-green[.justify-center[How to choose the right forecasting techniques?]]]
+
+---
+
+
+class: inverse
+background-image: url(imgwhyr/rice1.png)
+background-size: contain
+
+
+
+
+---
+
+class: inverse
+background-image: url(imgwhyr/rice2.png)
+background-size: contain
+
+---
+
+#### Time series
+
+```{r, comment=NA,fig.width=15, message=FALSE, warning=FALSE, echo=FALSE}
+library(Mcomp)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+library(png)
+library(tsfeatures)
+library(tidyverse)
+library(ggpubr)
+# Extract required series
+series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
+color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
+model <- c("Random walk with drift", "NAIVE", "Random walk", "NAIVE", "ETS", "SARIMA")
+six_series <- lapply(M3[series_id], function(u){u$x})
+p <- lapply(six_series,
+function(u) {autoplot(u) + xlab("") + ylab("")}
+)
+for (i in seq_along(six_series))
+p[[i]] <- p[[i]] +geom_line(color=color[i]) +ggtitle(series_id[i])+theme(title =element_text(size=10, face='bold'))
+grid.arrange(grobs = p, ncol = 3)
+```
+
+---
+
+
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#ffff99", "black","#b2df8a", "red", "#377eb8", "#984ea3")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+---
+
+
+####  Time series and their best forecasting method
+
+```{r, comment=NA, message=FALSE, fig.width=15, warning=FALSE, echo=FALSE}
+library(Mcomp)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+library(png)
+library(tsfeatures)
+library(tidyverse)
+library(ggpubr)
+# Extract required series
+series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
+color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
+model <- c("Random walk with drift", "NAIVE", "Random walk with drift", "NAIVE", "ETS", "SARIMA")
+six_series <- lapply(M3[series_id], function(u){u$x})
+p <- lapply(six_series,
+function(u) {autoplot(u) + xlab("") + ylab("")}
+)
+for (i in seq_along(six_series))
+p[[i]] <- p[[i]] +geom_line(color=color[i]) +ggtitle(series_id[i], model[i])+theme(title =element_text(size=10, face='bold'))
+grid.arrange(grobs = p, ncol = 3)
+```
+
+
+
+---
+
+
+
+background-image: url(imgwhyr/tukey.jpeg)
+background-size: 200px
+background-position: 100% 6%
+
+# Time series features
+
+- **Cognostics**: **Co**mputer-aided dia**gnostics** (John W. Tukey, 1985)
+
+- Characteristics of time series
+
+- Summary measures of time series
+
+
+**Basic Principle**
+
+- Transform a given time series $y=\{y_1, y_2, \cdots, y_n\}$ into a feature vector $F = (f_1(y), f_2(y), \cdots, f_p(y))'$. 
+
+
+---
+
+.pull-left[
+#### Time-domain representation
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+library(Mcomp)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+library(png)
+library(tsfeatures)
+library(tidyverse)
+library(ggpubr)
+# Extract required series
+series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
+color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
+model <- c("Random walk with drift", "NAIVE", "Random walk with drift", "NAIVE", "ETS", "SARIMA")
+six_series <- lapply(M3[series_id], function(u){u$x})
+p <- lapply(six_series,
+function(u) {autoplot(u) + xlab("") + ylab("")}
+)
+for (i in seq_along(six_series))
+p[[i]] <- p[[i]] +geom_line(color=color[i]) +ggtitle(series_id[i], model[i])+theme(title =element_text(size=10, face='bold'))
+grid.arrange(grobs = p, ncol = 2)
+```
+
+]
+
+--
+
+.pull-right[
+
+#### Time series features
+
+- Strength of trend
+
+
+- Strength of seasonality
+
+
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+df <- tsfeatures(six_series, c("stl_features")) %>%
+  select(trend, seasonal_strength) %>%
+  rename(seasonality = seasonal_strength) %>%
+  replace_na(list(seasonality = 0))
+df$id <- names(six_series)
+
+df
+
+```
+
+]
+
+---
+
+.pull-left[
+
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+library(Mcomp)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+library(png)
+library(tsfeatures)
+library(tidyverse)
+library(ggpubr)
+# Extract required series
+series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
+color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
+six_series <- lapply(M3[series_id], function(u){u$x})
+p <- lapply(six_series,
+function(u) {autoplot(u) + xlab("") + ylab("")}
+)
+for (i in seq_along(six_series))
+p[[i]] <- p[[i]] +geom_line(color=color[i]) +ggtitle(series_id[i])+theme(title =element_text(size=10, face='bold'))
+grid.arrange(grobs = p, ncol = 2)
+```
+
+
+]
+
+.pull-right[
+
+
+$$y_t = T_t + S_t + R_t$$
+
+$$F_T = max \left(0, 1 - \frac{Var(R_t)}{Var(T_t + R_t)} \right)$$
+
+$$F_S = max \left(0, 1 - \frac{Var(R_t)}{Var(S_t + R_t)} \right)$$
+
+]
+
+
+---
+
+.pull-left[
+#### Time-domain representation
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+library(Mcomp)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+library(png)
+library(tsfeatures)
+library(tidyverse)
+library(ggpubr)
+# Extract required series
+series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
+color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
+six_series <- lapply(M3[series_id], function(u){u$x})
+p <- lapply(six_series,
+function(u) {autoplot(u) + xlab("") + ylab("")}
+)
+for (i in seq_along(six_series))
+p[[i]] <- p[[i]] +geom_line(color=color[i]) +ggtitle(series_id[i])+theme(title =element_text(size=10, face='bold'))
+grid.arrange(grobs = p, ncol = 2)
+```
+
+]
+
+--
+
+.pull-right[
+
+#### Feature-domain representation
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+df <- tsfeatures(six_series, c("stl_features")) %>%
+  select(trend, seasonal_strength) %>%
+  rename(seasonality = seasonal_strength) %>%
+  replace_na(list(seasonality = 0))
+df$id <- names(six_series)
+ggplot(df, aes(x = trend, y = seasonality)) +
+  geom_point(size = 5, color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")) +
+  xlim(0, 1) + ylim(0, 1) +
+  xlab("Strength of trend") + 
+  ylab("Strength of seasonality") + 
+  coord_fixed() +
+  geom_text_repel(
+    aes(label = id),
+    colour = "black",
+    size = 5,
+    box.padding = unit(0.5, "lines")
+  ) +
+  theme(legend.position = "none")
+```
+
+]
+
+---
+
+
+## Examples of time series features
+
+.pull-left[
+
+- length
+
+- strength of trend
+
+- strength of seasonality
+
+- lag-1 autocorrelation
+
+- spectral entropy
+
+- proportion of zeros
+
+- spikiness
+
+]
+
+.pull-right[
+
+- curvature
+
+- linearity
+
+- stability
+
+- number of peaks
+
+- parameter estimates of Holt-Winters' additive method
+
+- unit root test statistics
+
+]
+---
+
+
+class: center, middle
+
+# Feature-based time series forecasting
+
+
+---
+
+class: inverse, center, middle
+background-image: url(imgwhyr/f1.png)
+background-size: contain
+
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f2.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f3.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f4.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f5.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f6.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f7.png)
+background-size: contain
+
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f8.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f9.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f10.png)
+background-size: contain
+
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f11.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f12.png)
+background-size: contain
+
+---
+class: inverse, center, middle
+background-image: url(imgwhyr/f13.png)
+background-size: contain
+
+
+---
+
+
+
+### FFORMS: **F**eature-based **FOR**ecast **M**odel **S**election
+
+
+.pull-left[
+
+seer (magic ball)
+
+```{r   out.width = "50%", echo = FALSE, fig.cap=''}
+knitr::include_graphics("imgwhyr/seer.png")
+```
+
+
+```{r, comment=NA, eval=FALSE}
+install.packages("seer")
+#library(devtools)
+#install_github("thiyangt/seer")
+library(seer)
+```
+
+]
+
+--
+
+.pull-right[
+
+Acropolis Museum, Athens, Greece
+
+```{r   out.width = "60%", echo = FALSE, fig.cap=''}
+knitr::include_graphics("imgwhyr/greece.JPG")
+```
+
+
+
+]
+
+
+---
+## seer package
+
+**Training set**
+
+```{r, comment=NA}
+library(Mcomp)
+data(M1)
+yearly_m1 <- subset(M1, "yearly")
+yearly_m1
+```
+
+**Test set**
+
+```{r, comment=NA}
+data(M3)
+yearly_m3 <- subset(M3, "yearly")
+m3y <- M3[1:2]
+m3y
+```
+
+
+---
+## seer package: `cal_features`
+
+```{r, echo=FALSE, warning=F, message=FALSE, comment=NA}
+library(seer)
+features_m1 <- cal_features(yearly_m1, database="M1", h=6, highfreq = FALSE)
+features_m1
+```
+
+
+
+---
+## seer package: `fcast_accuracy`
+
+
+```{r, comment=NA, message=FALSE}
+accuracy_m1 <- fcast_accuracy(tslist=yearly_m1, 
+                              models= c("arima","ets","rw","rwd", "theta", "nn"), 
+                              database ="M1", cal_MASE, h=6, length_out = 1, fcast_save = TRUE)
+accuracy_m1
+```
+
+
+---
+## seer package: `prepare_trainingset`
+
+```{r, comment=NA, message=FALSE}
+prep_tset <- prepare_trainingset(accuracy_set = accuracy_m1, feature_set = features_m1)
+prep_tset
+```
+
+---
+
+## seer package: `prepare_trainingset`
+
+```{r, comment=NA, message=FALSE}
+prep_tset$trainingset
+```
+
+---
+## seer package
+
+```{r, comment=NA, cache=TRUE}
+M3yearly_features <- seer::cal_features(yearly_m3, database="M3", h=6, highfreq = FALSE)
+head(M3yearly_features)
+```
+
+
+---
+
+
+## seer package: `build_rf`
+
+```{r, comment=NA, message=FALSE, warning=F}
+rf <- build_rf(training_set = prep_tset$trainingset,
+               rf_type="rcp", ntree=100, 
+               seed=1, 
+               import=FALSE, mtry = 8)
+predictedlabels_m3 <- predict(rf$randomforest, M3yearly_features)
+predictedlabels_m3
+```
+
+
+---
+
+## seer package: `rf_forecast`
+
+```{r, comment=NA, message=FALSE}
+forecasts <- rf_forecast(predictions=predictedlabels_m3[1:2], tslist=yearly_m3[1:2], database="M3", function_name="cal_MASE", h=6, accuracy=TRUE)
+forecasts$mean
+```
+
+---
+
+## seer package: `rf_forecast`
+
+```{r, comment=NA, message=FALSE}
+forecasts$lower
+forecasts$upper
+```
+
+
+
+---
+background-image:url(imgwhyr/m4results.png)
+background-size: contain
 
 
 
