@@ -60,6 +60,8 @@ library(tidyr)
 library(rlang)
 library(tidyverse)
 library(tsfeatures)
+library(fable)
+library(Mcomp)
 ```
 
 
@@ -848,6 +850,75 @@ ggplot(df, aes(x = trend, y = seasonality)) +
 - unit root test statistics
 
 ]
+
+---
+
+## Strength of trend
+
+.pull-left[
+
+```{r, comment=NA, message=FALSE, echo=FALSE, warning=FALSE, eval=FALSE}
+library(fable)
+as_tsibble(M3[["N1912"]]$x) %>%
+  model(
+    STL(value ~ trend(window = 7) +
+                   season(window = "periodic"),
+    robust = TRUE)) %>%
+  components() %>%
+  autoplot()
+
+```
+
+![](img/STL.png)
+
+
+]
+
+.pull-right[
+
+$$y_t = T_t + S_t + R_t$$
+
+$$F_T = max \left(0, 1 - \frac{Var(R_t)}{Var(T_t + R_t)} \right)$$
+
+
+]
+
+
+---
+
+## Strength of seasonality
+
+.pull-left[
+
+```{r, comment=NA, message=FALSE, echo=FALSE, warning=FALSE, eval=FALSE}
+
+as_tsibble(M3[["N1912"]]$x) %>%
+  model(
+    STL(value ~ trend(window = 7) +
+                   season(window = "periodic"),
+    robust = TRUE)) %>%
+  components() %>%
+  autoplot()
+
+```
+
+![](img/STL.png)
+
+]
+
+
+.pull-right[
+
+$$y_t = T_t + S_t + R_t$$
+
+$$F_S = max \left(0, 1 - \frac{Var(R_t)}{Var(S_t + R_t)} \right)$$
+
+
+
+]
+
+
+
 ---
 
 
@@ -977,6 +1048,8 @@ data(M1)
 yearly_m1 <- subset(M1, "yearly")
 yearly_m1
 ```
+
+---
 
 **Test set**
 
@@ -1145,219 +1218,35 @@ class: center, middle
 
 # What problems do you see in the plot?
 
----
-
-
-background-image: url(img/tukey.jpeg)
-background-size: 200px
-background-position: 100% 6%
-
-# Time series features
-
-- **Cognostics**: **Co**mputer-aided dia**gnostics** (John W. Tukey, 1985)
-
-- Characteristics of time series
-
-- Summary measures of time series
-
-
-**Basic Principle**
-
-- Transform a given time series $y=\{y_1, y_2, \cdots, y_n\}$ into a feature vector $F = (f_1(y), f_2(y), \cdots, f_p(y))'$. 
-
-
-
 
 ---
 
-## Examples of time series features
+
+
+## *F*eature *E*xtraction *A*nd *S*tatistics for *T*ime *S*eries: *feasts*
 
 .pull-left[
 
-- length
+You could install the stable version from CRAN:
 
-- strength of trend
-
-- strength of seasonality
-
-- lag-1 autocorrelation
-
-- spectral entropy
-
-- proportion of zeros
-
-- spikiness
-
-]
-
-.pull-right[
-
-- curvature
-
-- linearity
-
-- stability
-
-- number of peaks
-
-- parameter estimates of Holt-Winters' additive method
-
-- unit root test statistics
-
-
-
-
-
-
-
-
-]
-
----
-.pull-left[
-#### Time-domain representation
-
-```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
-library(Mcomp)
-library(ggplot2)
-library(grid)
-library(gridExtra)
-library(ggrepel)
-library(png)
-library(tsfeatures)
-library(tidyverse)
-library(ggpubr)
-# Extract required series
-series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
-color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
-six_series <- lapply(M3[series_id], function(u){u$x})
-p <- lapply(six_series,
-function(u) {autoplot(u) + xlab("") + ylab("")}
-)
-for (i in seq_along(six_series))
-p[[i]] <- p[[i]] +geom_line(color=color[i]) +ggtitle(series_id[i])+theme(title =element_text(size=10, face='bold'))
-grid.arrange(grobs = p, ncol = 2)
+```r
+install.packages("feasts")
 ```
 
-]
+You can install the development version from GitHub with:
 
---
-
-.pull-right[
-
-#### Feature-domain representation
-
-```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
-df <- tsfeatures(six_series, c("stl_features")) %>%
-  select(trend, seasonal_strength) %>%
-  rename(seasonality = seasonal_strength) %>%
-  replace_na(list(seasonality = 0))
-df$id <- names(six_series)
-ggplot(df, aes(x = trend, y = seasonality)) +
-  geom_point(size = 5, color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")) +
-  xlim(0, 1) + ylim(0, 1) +
-  xlab("Strength of trend") + 
-  ylab("Strength of seasonality") + 
-  coord_fixed() +
-  geom_text_repel(
-    aes(label = id),
-    colour = "black",
-    size = 5,
-    box.padding = unit(0.5, "lines")
-  ) +
-  theme(legend.position = "none")
-```
-
-]
-
----
-
-### Time-domain representation
-
-.pull-left[
-
-
-```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
-library(Mcomp)
-library(ggplot2)
-library(grid)
-library(gridExtra)
-library(ggrepel)
-library(png)
-library(tsfeatures)
-library(tidyverse)
-library(ggpubr)
-# Extract required series
-series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
-color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
-six_series <- lapply(M3[series_id], function(u){u$x})
-six_series
-```
-
-]
-
-.pull-right[
-
-```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
-library(Mcomp)
-library(ggplot2)
-library(grid)
-library(gridExtra)
-library(ggrepel)
-library(png)
-library(tsfeatures)
-library(tidyverse)
-library(ggpubr)
-# Extract required series
-series_id <- c("N0001", "N0633", "N0625", "N0645","N1912", "N2012")
-color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")
-six_series <- lapply(M3[series_id], function(u){u$x})
-p <- lapply(six_series,
-function(u) {autoplot(u) + xlab("") + ylab("")}
-)
-for (i in seq_along(six_series))
-p[[i]] <- p[[i]] +geom_line(color=color[i]) +ggtitle(series_id[i])+theme(title =element_text(size=10, face='bold'))
-grid.arrange(grobs = p, ncol = 2)
-```
-
-]
-
----
-### Feature-domain representation
-
-.pull-left[
-
-```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
-df 
+```r
+# install.packages("remotes")
+remotes::install_github("tidyverts/feasts")
 ```
 ]
 
 .pull-right[
 
-
-```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
-df <- tsfeatures(six_series, c("stl_features")) %>%
-  select(trend, seasonal_strength) %>%
-  rename(seasonality = seasonal_strength) %>%
-  replace_na(list(seasonality = 0))
-df$id <- names(six_series)
-ggplot(df, aes(x = trend, y = seasonality)) +
-  geom_point(size = 5, color = c("#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02")) +
-  xlim(0, 1) + ylim(0, 1) +
-  xlab("Strength of trend") + 
-  ylab("Strength of seasonality") + 
-  coord_fixed() +
-  geom_text_repel(
-    aes(label = id),
-    colour = "black",
-    size = 5,
-    box.padding = unit(0.5, "lines")
-  ) +
-  theme(legend.position = "none")
-```
-
-
+![](img/feastlogo.png)
 ]
+
+
 
 
 ---
@@ -1443,288 +1332,8 @@ ggplotly(p)
 ]
 
 
----
-
-## Strength of trend
-
-.pull-left[
-
-```{r, comment=NA, message=FALSE, echo=FALSE, warning=FALSE}
-library(fable)
-as_tsibble(M3[["N1912"]]$x) %>%
-  model(
-    STL(value ~ trend(window = 7) +
-                   season(window = "periodic"),
-    robust = TRUE)) %>%
-  components() %>%
-  autoplot()
-
-```
-
-
-
-]
-
-.pull-right[
-
-$$y_t = T_t + S_t + R_t$$
-
-$$F_T = max \left(0, 1 - \frac{Var(R_t)}{Var(T_t + R_t)} \right)$$
-
-
-]
-
 
 ---
-
-## Strength of seasonality
-
-.pull-left[
-
-```{r, comment=NA, message=FALSE, echo=FALSE, warning=FALSE}
-library(fable)
-as_tsibble(M3[["N1912"]]$x) %>%
-  model(
-    STL(value ~ trend(window = 7) +
-                   season(window = "periodic"),
-    robust = TRUE)) %>%
-  components() %>%
-  autoplot()
-
-```
-
-
-]
-
-
-.pull-right[
-
-$$y_t = T_t + S_t + R_t$$
-
-$$F_S = max \left(0, 1 - \frac{Var(R_t)}{Var(S_t + R_t)} \right)$$
-
-
-
-]
-
-
----
-
-
-## *F*eature *E*xtraction *A*nd *S*tatistics for *T*ime *S*eries: *feasts*
-
-.pull-left[
-
-You could install the stable version from CRAN:
-
-```r
-install.packages("feasts")
-```
-
-You can install the development version from GitHub with:
-
-```r
-# install.packages("remotes")
-remotes::install_github("tidyverts/feasts")
-```
-]
-
-.pull-right[
-
-![](img/feastlogo.png)
-]
-
-
-
-
----
-
-
-class: center, middle
-
-
-# Large-scale time series forecasting
-
-
----
-
-class: inverse
-background-image: url(img/rice1.png)
-background-size: contain
-
-
-
-
----
-
-class: inverse
-background-image: url(img/rice2.png)
-background-size: contain
-
----
-
-class: center, middle
-
-# Feature-based time series forecasting
-
-
----
-
-class: inverse, center, middle
-background-image: url(img/f1.png)
-background-size: contain
-
-
----
-class: inverse, center, middle
-background-image: url(img/f2.png)
-background-size: contain
-
----
-class: inverse, center, middle
-background-image: url(img/f3.png)
-background-size: contain
-
----
-class: inverse, center, middle
-background-image: url(img/f4.png)
-background-size: contain
-
----
-class: inverse, center, middle
-background-image: url(img/f5.png)
-background-size: contain
-
----
-class: inverse, center, middle
-background-image: url(img/f6.png)
-background-size: contain
-
----
-class: inverse, center, middle
-background-image: url(img/f7.png)
-background-size: contain
-
-
----
-class: inverse, center, middle
-background-image: url(img/f8.png)
-background-size: contain
-
----
-class: inverse, center, middle
-background-image: url(img/f9.png)
-background-size: contain
-
----
-class: inverse, center, middle
-background-image: url(img/f10.png)
-background-size: contain
-
-
----
-class: inverse, center, middle
-background-image: url(img/f11.png)
-background-size: contain
-
----
-class: inverse, center, middle
-background-image: url(img/f12.png)
-background-size: contain
-
----
-class: inverse, center, middle
-background-image: url(img/f13.png)
-background-size: contain
-
----
-
-## Machine learning algorithms
-
-- Random forest
-
-- XGBoost
-
----
-background-image: url(img/forest.jpg)
-background-size: cover
-
-# Random forest
-
----
-background-image: url(img/rf1.png)
-background-size: contain
-
-## Random forest
-
----
-background-image: url(img/rf2.png)
-background-size: contain
-
-## Random forest
-
----
-background-image: url(img/rf3.png)
-background-size: contain
-
-## Random forest
-
----
-background-image: url(img/rf4.png)
-background-size: contain
-
-## Random forest
-
----
-background-image: url(img/rf5.png)
-background-size: contain
-
-
-
----
-background-image: url(img/rf6.png)
-background-size: contain
-
-
-
----
-background-image: url(img/rf7.png)
-background-size: contain
-
-
-
----
-background-image: url(img/rf8.png)
-background-size: contain
-
-
-
----
-background-image: url(img/rf9.png)
-background-size: contain
-
-
-
----
-background-image: url(img/rf10.png)
-background-size: contain
-
-
-
----
-background-image: url(img/rf11.png)
-background-size: contain
-
-
----
-background-image: url(img/rf12.png)
-background-size: contain
-
-
-
----
-background-image: url(img/rf13.png)
-background-size: contain
 
 
 

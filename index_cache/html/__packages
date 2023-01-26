@@ -1,16 +1,8 @@
-base
-methods
-datasets
-utils
-grDevices
-graphics
-stats
 xaringanthemer
 knitr
 ggplot2
 patchwork
 reshape2
-grid
 gridExtra
 ggrepel
 png
