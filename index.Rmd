@@ -388,7 +388,7 @@ class: center, top, inverse
 
 ---
 
-background-image: url(img/globe.jpg)
+background-image: url(imgwhyr/globe.jpg)
 class: center, top, inverse
 
 
