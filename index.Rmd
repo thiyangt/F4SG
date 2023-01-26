@@ -84,7 +84,7 @@ library(Mcomp)
 }
 </style>
 
----
+
 background-image: url(python/acknowledgement.png)
 background-size: contain
 
