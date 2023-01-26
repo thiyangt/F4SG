@@ -2,7 +2,7 @@
 title: "Forecasting Large-Scale Time Series"
 subtitle: ""
 author: "Thiyanga S. Talagala"
-date: "Organized by Forecasting for Social Good (F4SG) - an official section of the International Institute of Forecasters  "
+date: "Organized by the Forecasting for Social Good (F4SG) - an official section of the International Institute of Forecasters  "
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -100,11 +100,11 @@ background-size: contain
 
 - Feature-based time series forecasting
 
-- Introduction to tsfeatures package
+- Introduction to the tsfeatures package
 
-- Introduction to seer package
+- Introduction to the seer package
 
-- feasts: *F*eature *E*xtraction *A*nd *S*tatistics for *T*ime *S*eries
+- feasts: **F**eature **E**xtraction **A**nd **S**tatistics for **T**ime **S**eries package in R
     
 - What did we learn?
 
