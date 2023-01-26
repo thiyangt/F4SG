@@ -177,8 +177,8 @@ library(lubridate)
 library(tidyverse)
 set.seed(1)
 bananas <- M3$N2012$x
-mth <- make_date("2011") + months(5:130)
-mth2 <- make_date("2021") + months(11)
+mth <- make_date("2012") + months(5:130)
+mth2 <- make_date("2022") + months(11)
 bananas <- tibble(
   Time = yearmonth(mth), 
   Sales = bananas)
