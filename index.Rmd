@@ -40,6 +40,26 @@ style_duo_accent(
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
+library(knitr)
+options(htmltools.dir.version = FALSE)
+read_chunk("src/main.R")
+library(ggplot2)
+library(patchwork)
+library(reshape2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+library(png)
+library(tsfeatures)
+library(tidyverse)
+library(ggpubr)
+library(RColorBrewer)
+library(dplyr)
+library(forecast)
+library(tidyr)
+library(rlang)
+library(tidyverse)
+library(tsfeatures)
 ```
 
 
@@ -80,6 +100,374 @@ options(htmltools.dir.version = FALSE)
 - What did we learn?
 
 - Where to go from here?
+
+
+---
+class: center, middle
+
+background-image: url(img/shopping.jpg)
+background-size: contain
+class: center, top, inverse
+
+---
+background-image: url(img/bananas.jpg)
+class: center, top, inverse
+
+---
+
+## Sales data
+
+.pull-left[
+
+Data from June, 2011 to November, 2021
+
+```{r, comment=NA, echo=FALSE, message=FALSE, warning=FALSE, size="tiny"}
+library(Mcomp)
+library(tsibble)
+library(lubridate)
+library(tidyverse)
+set.seed(1)
+bananas <- M3$N2012$x
+mth <- make_date("2011") + months(5:130)
+mth2 <- make_date("2021") + months(11)
+bananas <- tibble(
+  Time = yearmonth(mth), 
+  Sales = bananas)
+bananas <- as_tsibble(bananas)
+bananas
+```
+
+
+]
+
+.pull-right[
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+library(fable)
+bananas %>% 
+  autoplot(Sales) 
+```
+
+]
+
+
+---
+
+
+
+## Sales data
+
+.pull-left[
+
+Data from June, 2011 to November, 2021
+
+```{r, comment=NA, echo=FALSE, message=FALSE, warning=FALSE, size="tiny"}
+library(Mcomp)
+library(tsibble)
+library(lubridate)
+library(tidyverse)
+set.seed(1)
+bananas <- M3$N2012$x
+mth <- make_date("2011") + months(5:130)
+mth2 <- make_date("2021") + months(11)
+bananas <- tibble(
+  Time = yearmonth(mth), 
+  Sales = bananas)
+bananas <- as_tsibble(bananas)
+bananas
+```
+
+
+]
+
+.pull-right[
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+library(fable)
+bananas %>% 
+  autoplot(Sales) + geom_vline(xintercept = mth2, lwd=2, col="#e7298a")
+```
+
+]
+
+
+---
+
+## Sales data
+
+.pull-left[
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+library(fable)
+bananas %>% 
+  autoplot(Sales) + geom_vline(xintercept = mth2, lwd=2, col="#e7298a")
+```
+
+]
+
+--
+.pull-right[
+
+- **How much** will you sell over the next 12 months?
+
+- **How much** do we need to produce and **when**?
+
+
+
+]
+
+
+---
+
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#666666", "#666666", "#666666","#666666", "#666666", "#666666", "#666666")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+
+---
+
+
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Communication", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Communication", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#666666", "#666666","#666666", "#666666", "#666666", "#666666")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+---
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Communication", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Communication", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#ffff99", "#666666","#666666", "#666666", "#666666", "#666666")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+---
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Communication", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#ffff99", "black","#b2df8a", "red", "#666666", "#666666")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+---
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#ffff99", "black","#b2df8a", "red", "#377eb8", "#666666")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+---
+
+### What might happen during a typical model building process?
+
+```{r, comment=NA, echo=FALSE, fig.width=15}
+library(ggplot2)
+df <- data.frame(v1=factor(c("Data wrangling", 
+  "Data Visualization", 
+                                "Data Visualization", 
+                                "Data Preprocessing",
+                                "Data Visualization", 
+  "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning", "Model fitting","Evaluating forecast accuracy", "Tunning", "Model fitting", "Evaluating forecast accuracy", "Tunning",  "Evaluation", "Data Visualization", "Communication"
+    
+                                
+                                ), levels=c("Data wrangling",
+                                            "Data Visualization", "Data Preprocessing", "Model fitting", "Tunning", "Evaluating forecast accuracy", "Evaluation", "Communication")), v2=rep(1, 23), v3=1:23)
+
+ggplot(df, aes(y=v2, x=v3)) + 
+  geom_tile(aes(fill = v1)) + 
+  scale_fill_manual(values= c("#a6cee3", "#fb9a99", "#ffff99", "black","#b2df8a", "red", "#377eb8", "#984ea3")) + 
+  scale_y_discrete(labels = NULL, breaks = NULL) + labs(y = "")+
+  theme(axis.text.x = element_text(angle = 270)) +  scale_x_discrete(labels = aes(v1)) + labs(x="") +  theme(legend.position="bottom", legend.title = element_blank())
+```
+
+---
+background-image: url(img/supermarket.jpg)
+class: center, top, inverse
+
+
+---
+background-image: url(img/supermarket.jpg)
+class: center, top, inverse
+
+
+.full-width[.content-box-blue[Multiple products]]
+
+---
+
+background-image: url(img/globe.jpg)
+class: center, top, inverse
+
+
+.full-width[.content-box-blue[Multiple products across many warehouses]]
+
+---
+
+
+## Number of series: 1
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, comment=NA}
+library(tidyverse)
+library(coronavirus)
+coronavirus <- coronavirus %>% mutate(cases = replace(cases, which(cases<0), NA))
+coronavirus <- coronavirus %>% mutate(cases = replace(cases, which(cases>800000), 800))
+#confirmed <- coronavirus %>% filter(type == "confirmed")
+confirmed <- coronavirus %>% 
+  filter(type == "confirmed") %>%
+  group_by(country, date) %>%
+  summarise(cases = sum(cases)) 
+```
+
+```{r, echo=FALSE, fig.width=15, fig.height=8, warning=FALSE, message=FALSE}
+library(plotly)
+p <- ggplot(confirmed, aes(x=date, y=cases)) + geom_line(colour=NA) +  theme(legend.position = "none")
+p + geom_line(data = subset(confirmed,  country == "Norway"),color = "red") + theme(legend.position = "none") + ylim(c(0, 800)) + ylab("Sales")
+```
+
+---
+## Number of series: 2
+
+```{r, echo=FALSE, fig.width=15, fig.height=8, warning=FALSE, message=FALSE}
+library(plotly)
+p <- ggplot(confirmed, aes(x=date, y=cases)) + geom_line(colour=NA) +  theme(legend.position = "none")
+p + geom_line(data = subset(confirmed,  country == "Norway"),color = "red") + geom_line(data = subset(confirmed,  country == "China"),color = "#7570b3") + theme(legend.position = "none") + ylim(c(0, 800)) + ylab("Sales")
+```
+
+
+---
+
+## Number of series: 3
+
+```{r, echo=FALSE, fig.width=15, fig.height=8, warning=FALSE, message=FALSE}
+library(plotly)
+p <- ggplot(confirmed, aes(x=date, y=cases)) + geom_line(colour=NA) +  theme(legend.position = "none")
+p + geom_line(data = subset(confirmed,  country == "Norway"),color = "red") + geom_line(data = subset(confirmed,  country == "China"),color = "#7570b3") + geom_line(data = subset(confirmed,  country == "Australia"),color = "#1b9e77") +
+  theme(legend.position = "none") + ylim(c(0, 800)) + ylab("Sales")
+```
+
+---
+
+
+## Number of series: 10
+
+```{r, echo=FALSE, fig.width=15, fig.height=8, warning=FALSE, message=FALSE}
+library(plotly)
+p <- ggplot(confirmed, aes(x=date, y=cases)) + geom_line(colour=NA) +  theme(legend.position = "none")
+p + geom_line(data = subset(confirmed,  country == "Norway"),color = "red") + geom_line(data = subset(confirmed,  country == "China"),color = "#7570b3") + geom_line(data = subset(confirmed,  country == "Australia"),color = "#1b9e77") +
+  geom_line(data = subset(confirmed,  country == "Sri Lanka"),color = "#ff7f00") +
+  geom_line(data = subset(confirmed,  country == "Ireland"),color = "#6a3d9a") +
+  geom_line(data = subset(confirmed,  country == "Colombia"),color = "#1f78b4") +
+  geom_line(data = subset(confirmed,  country == "Russia"),color = "#b2df8a") +
+  geom_line(data = subset(confirmed,  country == "Mexico"),color = "#fdbf6f") +
+  geom_line(data = subset(confirmed,  country == "Canada"),color = "#fb9a99") +
+  geom_line(data = subset(confirmed,  country == "Poland"),color = "#cab2d6") +
+  theme(legend.position = "none") + ylim(c(0, 800)) + ylab("Sales")
+```
+
+---
+
+
+## Number of series: More than 100
+
+```{r, echo=FALSE, fig.width=15, fig.height=8, warning=FALSE, message=FALSE}
+library(plotly)
+p <- ggplot(confirmed, aes(x=date, y=cases, colour=country)) + geom_line() +  theme(legend.position = "none")
+p + theme(legend.position = "none") + ylim(c(0, 800)) + ylab("Sales")
+```
+
+---
+class: center, middle, inverse
+
+#How to forecast large number of univariate time series?
+
+
+
+
+
 
 
 ---
