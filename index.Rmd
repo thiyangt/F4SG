@@ -756,6 +756,74 @@ $$F_S = max \left(0, 1 - \frac{Var(R_t)}{Var(S_t + R_t)} \right)$$
 
 ---
 
+## Strength of trend
+
+.pull-left[
+
+```{r, comment=NA, message=FALSE, echo=FALSE, warning=FALSE, eval=FALSE}
+library(fable)
+as_tsibble(M3[["N1912"]]$x) %>%
+  model(
+    STL(value ~ trend(window = 7) +
+                   season(window = "periodic"),
+    robust = TRUE)) %>%
+  components() %>%
+  autoplot()
+
+```
+
+![](img/STL.png)
+
+
+]
+
+.pull-right[
+
+$$y_t = T_t + S_t + R_t$$
+
+$$F_T = max \left(0, 1 - \frac{Var(R_t)}{Var(T_t + R_t)} \right)$$
+
+
+]
+
+
+---
+
+## Strength of seasonality
+
+.pull-left[
+
+```{r, comment=NA, message=FALSE, echo=FALSE, warning=FALSE, eval=FALSE}
+
+as_tsibble(M3[["N1912"]]$x) %>%
+  model(
+    STL(value ~ trend(window = 7) +
+                   season(window = "periodic"),
+    robust = TRUE)) %>%
+  components() %>%
+  autoplot()
+
+```
+
+![](img/STL.png)
+
+]
+
+
+.pull-right[
+
+$$y_t = T_t + S_t + R_t$$
+
+$$F_S = max \left(0, 1 - \frac{Var(R_t)}{Var(S_t + R_t)} \right)$$
+
+
+
+]
+
+
+
+---
+
 .pull-left[
 #### Time-domain representation
 
@@ -848,72 +916,6 @@ ggplot(df, aes(x = trend, y = seasonality)) +
 - parameter estimates of Holt-Winters' additive method
 
 - unit root test statistics
-
-]
-
----
-
-## Strength of trend
-
-.pull-left[
-
-```{r, comment=NA, message=FALSE, echo=FALSE, warning=FALSE, eval=FALSE}
-library(fable)
-as_tsibble(M3[["N1912"]]$x) %>%
-  model(
-    STL(value ~ trend(window = 7) +
-                   season(window = "periodic"),
-    robust = TRUE)) %>%
-  components() %>%
-  autoplot()
-
-```
-
-![](img/STL.png)
-
-
-]
-
-.pull-right[
-
-$$y_t = T_t + S_t + R_t$$
-
-$$F_T = max \left(0, 1 - \frac{Var(R_t)}{Var(T_t + R_t)} \right)$$
-
-
-]
-
-
----
-
-## Strength of seasonality
-
-.pull-left[
-
-```{r, comment=NA, message=FALSE, echo=FALSE, warning=FALSE, eval=FALSE}
-
-as_tsibble(M3[["N1912"]]$x) %>%
-  model(
-    STL(value ~ trend(window = 7) +
-                   season(window = "periodic"),
-    robust = TRUE)) %>%
-  components() %>%
-  autoplot()
-
-```
-
-![](img/STL.png)
-
-]
-
-
-.pull-right[
-
-$$y_t = T_t + S_t + R_t$$
-
-$$F_S = max \left(0, 1 - \frac{Var(R_t)}{Var(S_t + R_t)} \right)$$
-
-
 
 ]
 
