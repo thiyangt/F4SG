@@ -1283,6 +1283,20 @@ features.all
 
 ---
 
+```{r, eval=FALSE}
+confirmed <- coronavirus %>% 
+  filter(type == "confirmed") %>%
+  group_by(country, date) %>%
+  summarise(cases = sum(cases))
+
+confirmed.tsibble <- confirmed %>%
+  as_tsibble(index = date, key = country)
+features.all <- confirmed.tsibble %>% features(cases, feature_set(tags = c("decomposition", "intermittent", "autocorrelation")))
+
+```
+
+---
+
 
 .pull-left[
 
