@@ -105,12 +105,12 @@ library(tsfeatures)
 ---
 class: center, middle
 
-background-image: url(img/shopping.jpg)
+background-image: url(imgwhyr/shopping.jpg)
 background-size: contain
 class: center, top, inverse
 
 ---
-background-image: url(img/bananas.jpg)
+background-image: url(imgwhyr/bananas.jpg)
 class: center, top, inverse
 
 ---
