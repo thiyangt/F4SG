@@ -1372,9 +1372,13 @@ background-image:url(python/f5.png)
 background-size: contain
 
 ---
-## What did we learn?, Where to go from here?
+background-image: url(img/mul.png)
+class: center, top, inverse
 
-![](img/mul.png)
+
+.full-width[.content-box-blue[What did we learn?/ Where to go from here?]]
+
+
 
 ---
 class: center, inverse, middle
