@@ -84,6 +84,12 @@ library(Mcomp)
 }
 </style>
 
+---
+background-image: url(python/acknowledgement.png)
+background-size: contain
+
+---
+
 
 ### Content
 
@@ -937,16 +943,19 @@ background-size: contain
 
 
 ---
+
 class: inverse, center, middle
 background-image: url(imgwhyr/f2.png)
 background-size: contain
 
 ---
+
 class: inverse, center, middle
 background-image: url(imgwhyr/f3.png)
 background-size: contain
 
 ---
+
 class: inverse, center, middle
 background-image: url(imgwhyr/f4.png)
 background-size: contain
@@ -1222,9 +1231,6 @@ class: center, middle
 
 
 ---
-
-
-
 ## *F*eature *E*xtraction *A*nd *S*tatistics for *T*ime *S*eries: *feasts*
 
 .pull-left[
@@ -1337,5 +1343,267 @@ ggplotly(p)
 
 ---
 
+`tsfeatures` in Python
 
+https://pypi.org/project/tsfeatures/
+
+
+![](img/tsfeaturesp.png)
+
+## Examples with Python
+
+http://localhost:8888/notebooks/python_tutorial/F4SG-Time%20Series%20Features.ipynb
+
+---
+background-image:url(python/f1.png)
+background-size: contain
+
+---
+background-image:url(python/f3.png)
+background-size: contain
+
+---
+background-image:url(python/f4.png)
+background-size: contain
+
+---
+background-image:url(python/f5.png)
+background-size: contain
+
+---
+
+
+## What did we learn?
+
+## Where to go from here?
+
+---
+class: center, inverse, middle
+background-image: url(imgwhyr/forest.jpg)
+background-size: cover
+
+# Can we trust ML-algorithms if we don't know how it works?
+
+---
+class: inverse
+background-image: url(imgwhyr/forest.jpg)
+background-size: cover
+
+## Peeking inside FFORMS Random forest
+
+.full-width[.content-box-yellow[.black[
+
+- **Which** features are the most important? 
+
+- **Where** are they important?
+
+- **How** are they important?
+
+- **When and how** are features linked with the prediction
+outcome?
+
+- **When and how strongly** do features interact with
+other features?]]]
+
+---
+
+## Vote probability matrix
+
+.pull-left[
+
+<img class="circle" src="imgwhyr/newplot.png" width="500px" height="550px"/>
+
+
+]
+
+.pull-right[
+
+<iframe width="690" height="547" src="https://www.youtube.com/embed/XMQRb67gMYQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+]
+
+
+---
+class: inverse, middle, center
+
+ ## .yellow[Which] features are the most important? 
+
+ ## .yellow[Where] are they important?
+
+ ## .yellow[How] are they important?
+
+---
+
+## Global explanation of feature contribution
+
+Overall role of features in the choice of different forecast-model selection.
+
+
+
+- Permutation-based variable importance
+- Mean decrease in Gini coefficient
+- Partial dependence plots (Jerome H. Friedman, 2001)
+- Individual Conditional Expectation (ICE) curves (Goldstein et al.,2015; Zhao and Hastie, 2017)
+
+---
+class: inverse, middle, center
+
+##Partial dependence plots and ICE curves
+
+---
+background-image: url(imgwhyr/p1.png)
+background-size: contain
+
+
+---
+background-image: url(imgwhyr/p2.png)
+background-size: contain                                                 
+---
+background-image: url(imgwhyr/p3.png)
+background-size: contain
+
+---
+background-image: url(imgwhyr/p4.png)
+background-size: contain 
+
+---
+background-image: url(imgwhyr/p6.png)
+background-size: contain
+
+---
+background-image: url(imgwhyr/p7.png)
+background-size: contain
+
+---
+class: inverse, middle, center
+## Feature importance plot for yearly series
+
+---
+background-image: url(imgwhyr/y1.png)
+background-size: contain
+
+
+---
+class: inverse, middle, center
+## Feature importance plot for quarterly series
+
+---
+background-image: url(imgwhyr/q1.png)
+background-size: contain
+
+---
+class: inverse, middle, center
+
+## .yellow[When and how] are features linked with the prediction outcome?
+
+
+---
+#### Partial dependency plots for quarterly data: strength of seasonality
+
+```{r, fig.width=15, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+knitr::include_graphics("imgwhyr/qseasonal.png")
+```
+
+---
+
+## Partial dependency plots for hourly data: entropy
+
+-  forecastability of a time series
+
+.pull-left[
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+knitr::include_graphics("imgwhyr/entropy.png")
+```
+
+]
+
+.pull-right[
+
+```{r, comment=NA, message=FALSE, warning=FALSE, echo=FALSE}
+knitr::include_graphics("imgwhyr/en_pdp4.png")
+```
+
+
+]
+
+
+---
+class: inverse, middle, center
+
+### .yellow[When and how strongly] do features interact with other features?
+                                                       
+---
+
+## Interaction effect
+
+- Friedman's H-statistic 
+
+    fraction of variance of two-variable partial dependency not captured by sum of the respective individual partial dependencies.
+    
+
+---
+
+Interaction between linearity and seasonal lag at seasonally-differenced series
+
+```{r, comment=NA, fig.width=15, echo=FALSE}
+knitr::include_graphics("imgwhyr/htwopdp1-1.png")
+```
+
+
+
+
+---
+
+Interaction between linearity and seasonal lag at seasonally-differenced series
+
+```{r, comment=NA, fig.width=15, echo=FALSE}
+knitr::include_graphics("imgwhyr/htwopdp3-1.png")
+```
+
+
+---
+class:  middle, inverse
+
+## Local interpretability
+
+---
+background-image: url(imgwhyr/local1.png)
+background-size: contain
+
+---
+background-image: url(imgwhyr/local2.png)
+background-size: contain
+
+
+---
+background-image: url(imgwhyr/local3.png)
+background-size: contain
+
+
+
+
+
+
+
+
+---
+class: center, middle
+
+# Thank You!
+
+```{r, echo=FALSE}
+anicon::faa("twitter", animate="float", size=3, colour="lightblue")
+```
+
+```{r, echo=FALSE}
+anicon::faa("github", animate="float", size=3, colour="black")
+```
+
+# @thiyangt
+
+
+### web: https://thiyanga.netlify.app
+
+# email: ttalagala@sjp.ac.lk
 
