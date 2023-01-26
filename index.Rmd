@@ -1377,6 +1377,8 @@ background-size: contain
 
 ## Where to go from here?
 
+![](img/mul.png)
+
 ---
 class: center, inverse, middle
 background-image: url(imgwhyr/forest.jpg)
