@@ -84,6 +84,7 @@ library(Mcomp)
 }
 </style>
 
+---
 
 background-image: url(python/acknowledgement.png)
 background-size: contain
@@ -1371,11 +1372,7 @@ background-image:url(python/f5.png)
 background-size: contain
 
 ---
-
-
-## What did we learn?
-
-## Where to go from here?
+## What did we learn?, Where to go from here?
 
 ![](img/mul.png)
 
@@ -1406,6 +1403,45 @@ outcome?
 
 - **When and how strongly** do features interact with
 other features?]]]
+
+---
+background-image: url(img/rf1.png)
+background-size: contain
+
+---
+background-image: url(img/rf2.png)
+background-size: contain
+
+---
+background-image: url(img/rf4.png)
+background-size: contain
+
+---
+background-image: url(img/rf6.png)
+background-size: contain
+
+---
+background-image: url(img/rf7.png)
+background-size: contain
+
+---
+background-image: url(img/rf8.png)
+background-size: contain
+
+---
+background-image: url(img/rf9.png)
+background-size: contain
+
+---
+background-image: url(img/rf13.png)
+background-size: contain
+
+
+
+
+
+
+
 
 ---
 
